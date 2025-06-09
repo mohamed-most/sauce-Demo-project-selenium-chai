@@ -1,0 +1,13 @@
+{
+  "dependencies": {
+    "chai": "^5.2.0",
+    "chalk": "^5.4.1",
+    "selenium-webdriver": "^4.33.0"
+  },
+  "scripts": {
+    "test:st": "node standard_user.js" , 
+    "test:lo": "node locked_out_user.js",
+    "test": "node standard_user.js && node locked_out_user.js && node problem_user.js"
+  },
+  "type": "module"
+}
