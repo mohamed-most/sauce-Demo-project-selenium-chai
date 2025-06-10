@@ -2,12 +2,17 @@
   "dependencies": {
     "chai": "^5.2.0",
     "chalk": "^5.4.1",
+    "install": "^0.13.0",
+    "npm": "^11.4.1",
+    "screenshot-desktop": "^1.15.1",
     "selenium-webdriver": "^4.33.0"
   },
   "scripts": {
-    "test:st": "node standard_user.js" , 
+    "test:st": "node standard_user.js",
     "test:lo": "node locked_out_user.js",
-    "test": "node standard_user.js && node locked_out_user.js && node problem_user.js"
+    "test:pr": "node problem_user.js",
+    "test:pg": "node performance_glitch_user.js",
+    "test:all": "node standard_user.js && node locked_out_user.js && node problem_user.js && node error_user.js"
   },
   "type": "module"
 }

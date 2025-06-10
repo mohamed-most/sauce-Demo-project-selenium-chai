@@ -1,9 +1,12 @@
 //imports
 import { Builder, By, until, WebDriver } from 'selenium-webdriver';
+import { expect } from 'chai';
 // import { Browser, Edge } from 'selenium-webdriver/chrome';
 import Chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
+// import  screenshot from 'screenshot-desktop';
+
 
 
 
@@ -15,12 +18,17 @@ import path from 'path';
  * @description Set up the driver and navigate to the website
  */
 export async function setUp() {
-    console.log("Setting up the driver... Edge Browser from SetUp Function");// debug
-
     let driver = await new Builder().forBrowser('MicrosoftEdge').build();
+
     await driver.manage().setTimeouts({ implicit: 5000 });
+
+    // Maximize first
+    await driver.manage().window().maximize();
+
+    // Set to high resolution fallback (e.g., Full HD)
+    await driver.manage().window().setRect({ width: 1920, height: 1080 });
+
     await driver.get('https://www.saucedemo.com/');
-    console.log("Driver set up Test Case 01");
     return driver;
 }
 
@@ -195,9 +203,8 @@ export async function saveScreenshot(driver, testName) {
     const filename = path.join(screenshotDir, `${testName}_${timestamp}.png`);
     const image = await driver.takeScreenshot();
     fs.writeFileSync(filename, image, 'base64');
-    console.log(`📸 Screenshot saved to ${filename}`);
+    // console.log(📸 Screenshot saved to ${filename});
 }
-
 
 export function clearScreenshotsDirectory() {
     const screenshotDir = './screenshots';
@@ -210,8 +217,28 @@ export function clearScreenshotsDirectory() {
                 fs.unlinkSync(filePath);
             }
         }
-        console.log(`🧹 Cleared all files from ${screenshotDir}`);
+        // console.log(`🧹 Cleared all files from ${screenshotDir}`);
     } else {
-        console.log(`⚠️ Directory ${screenshotDir} does not exist.`);
+        // console.log(`⚠️ Directory ${screenshotDir} does not exist.`);
     }
+}
+
+
+
+ async function get_all_items_prices(driver) {
+    const priceElements = await driver.findElements(By.css('div.inventory_item_price'));
+    const pricesText = await Promise.all(priceElements.map(el => el.getText()));
+    return pricesText.map(price => parseFloat(price.replace('$', '')));
+}
+
+// Sort helper (low to high)
+ function sort_prices_low_to_high(prices) {
+    return [...prices].sort((a, b) => a - b);
+}
+
+// Validate lowest price item is placed first
+export async function lowest_price_item_placed_first(driver) {
+    const displayedPrices = await get_all_items_prices(driver);
+    const sortedPrices = sort_prices_low_to_high(displayedPrices);
+    return displayedPrices[0] === sortedPrices[0];
 }
